@@ -69,7 +69,6 @@
     <p>基于音乐偏好心理学 MUSIC 五维模型（Rentfrow &amp; Gosling）改编：温润、质朴、精致、烈度、律动五个维度交叉计分，再从音乐角度解读你的耳朵——调式、BPM、和弦复杂度、音色偏好。娱乐向，但有依据。</p>
   </div>
   <button class="btn" onclick="startQuiz()">开始测试</button>
-  <p class="foot">公众号 · 边做边复盘</p>
 </div>
 
 <!-- 答题 -->
@@ -109,7 +108,6 @@
   <div id="cardWrap"><img id="cardImg" alt="结果卡片"><p>长按图片保存，分享给朋友一起测</p></div>
   <p class="soon">完整深度报告（含年度歌单 · 人格 CP）即将上线</p>
   <button class="btn ghost" onclick="location.reload()">再测一次</button>
-  <p class="foot">公众号 · 边做边复盘</p>
 </div>
 
 <canvas id="cv" width="1080" height="1440" style="display:none"></canvas>
@@ -381,7 +379,6 @@ function makeCard(){
   result.songs.forEach(sg=>{ ctx.fillText('· '+sg[0], 140, y); y += 64; });
   ctx.fillStyle = '#5A6572'; ctx.font = '30px sans-serif'; ctx.textAlign = 'center';
   ctx.fillText('小红书搜「音乐人格」一起测', 540, 1300);
-  ctx.fillText('公众号 · 边做边复盘', 540, 1352);
   const img = document.getElementById('cardImg');
   img.src = cv.toDataURL('image/png');
   document.getElementById('cardWrap').style.display = 'block';
