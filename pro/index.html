@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>测测你的音乐人格 · 深度版</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body { background:#0B0E11; color:#F5F5F5; font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif; min-height:100vh; }
+  .screen { display:none; max-width:520px; margin:0 auto; padding:48px 28px 60px; min-height:100vh; }
+  .screen.active { display:block; }
+  .tag { display:inline-block; color:#3DFF73; border:1px solid #3DFF73; border-radius:20px; padding:6px 16px; font-size:13px; margin-bottom:18px; }
+  h1 { font-size:38px; line-height:1.35; margin-bottom:14px; }
+  h1 .g { color:#3DFF73; }
+  .sub { color:#A0AAB4; font-size:16px; line-height:1.7; margin-bottom:36px; }
+  .btn { display:block; width:100%; background:#3DFF73; color:#0A140C; font-size:19px; font-weight:700; border:none; border-radius:50px; padding:17px; text-align:center; cursor:pointer; }
+  .btn:active { transform:scale(.98); }
+  .btn.ghost { background:transparent; color:#3DFF73; border:1px solid #3DFF73; margin-top:14px; }
+  .foot { text-align:center; color:#1F7A3D; font-size:13px; margin-top:44px; }
+  .basis { background:#12181E; border:1px solid #2A3542; border-radius:16px; padding:18px; margin-bottom:30px; }
+  .basis h3 { color:#3DFF73; font-size:15px; margin-bottom:8px; }
+  .basis p { color:#A0AAB4; font-size:13.5px; line-height:1.7; }
+  /* quiz */
+  .progress { height:6px; background:#1E2630; border-radius:3px; overflow:hidden; margin-bottom:30px; }
+  .progress i { display:block; height:100%; background:#3DFF73; border-radius:3px; transition:width .3s; }
+  .qnum { color:#3DFF73; font-size:14px; margin-bottom:10px; }
+  .q { font-size:23px; line-height:1.5; margin-bottom:28px; font-weight:700; }
+  .opt { display:block; width:100%; background:#12181E; border:1px solid #2A3542; color:#F5F5F5; font-size:16px; text-align:left; border-radius:16px; padding:17px 18px; margin-bottom:14px; cursor:pointer; line-height:1.5; }
+  .opt:active { border-color:#3DFF73; background:#16241B; }
+  /* result */
+  .rname { font-size:15px; color:#3DFF73; margin-bottom:8px; }
+  .rtitle { font-size:42px; font-weight:800; margin-bottom:10px; line-height:1.25; }
+  .rtag { color:#A0AAB4; font-size:17px; line-height:1.6; margin-bottom:28px; }
+  .dims { background:#12181E; border:1px solid #2A3542; border-radius:16px; padding:20px; margin-bottom:22px; }
+  .dims h3 { color:#3DFF73; font-size:16px; margin-bottom:16px; }
+  .dim { margin-bottom:12px; }
+  .dim:last-child { margin-bottom:0; }
+  .dim .dlabel { display:flex; justify-content:space-between; font-size:13.5px; color:#C9D1D9; margin-bottom:6px; }
+  .dim .dbar { height:8px; background:#1E2630; border-radius:4px; overflow:hidden; }
+  .dim .dbar i { display:block; height:100%; background:#3DFF73; border-radius:4px; }
+  .sec { background:#12181E; border:1px solid #2A3542; border-radius:16px; padding:20px; margin-bottom:22px; }
+  .sec h3 { color:#3DFF73; font-size:16px; margin-bottom:10px; }
+  .sec p { color:#C9D1D9; font-size:15.5px; line-height:1.85; }
+  .bgm { background:#12181E; border:1px solid #2A3542; border-radius:16px; padding:20px; margin-bottom:26px; }
+  .bgm h3 { color:#3DFF73; font-size:16px; margin-bottom:14px; }
+  .bgm .song { margin-bottom:14px; }
+  .bgm .song:last-child { margin-bottom:0; }
+  .bgm .sname { font-size:16px; font-weight:700; }
+  .bgm .swhy { color:#A0AAB4; font-size:13.5px; margin-top:4px; line-height:1.6; }
+  .soon { text-align:center; color:#5A6572; font-size:13px; margin:18px 0 6px; }
+  #shareTip { display:none; text-align:center; color:#3DFF73; font-size:14px; margin-top:14px; }
+  #cardWrap { display:none; margin-top:20px; text-align:center; }
+  #cardWrap img { width:100%; border-radius:16px; }
+  #cardWrap p { color:#3DFF73; font-size:14px; margin-top:10px; }
+  #r-cb p { color:#C9D1D9; font-size:15px; line-height:1.8; margin-bottom:12px; }
+  #r-cb p:last-child { margin-bottom:0; }
+  #r-cb .cbq { color:#3DFF73; }
+  .rare { display:inline-block; color:#3DFF73; border:1px solid #3DFF73; border-radius:20px; padding:6px 16px; font-size:13.5px; margin-bottom:28px; }
+  .unlock { background:#12181E; border:1px solid #2A3542; border-radius:16px; padding:18px; margin-bottom:30px; }
+  .unlock h3 { color:#3DFF73; font-size:15px; margin-bottom:6px; }
+  .unlock ul { list-style:none; }
+  .unlock li { color:#C9D1D9; font-size:14.5px; line-height:1.6; padding:8px 0; border-bottom:1px solid #1E2630; }
+  .unlock li:last-child { border-bottom:none; padding-bottom:2px; }
+  .unlock li::before { content:'\2713'; color:#3DFF73; font-weight:700; margin-right:10px; }
+  .dt { margin-bottom:16px; }
+  .dt:last-child { margin-bottom:0; }
+  .dt .dtname { font-size:15px; font-weight:700; margin-bottom:4px; }
+  .dt .dtname span { color:#3DFF73; font-weight:400; font-size:13px; margin-left:8px; }
+  .dt p { color:#C9D1D9; font-size:15px; line-height:1.8; }
+  .cp-item { margin-bottom:14px; }
+  .cp-item:last-child { margin-bottom:0; }
+  .cp-item .cplabel { color:#3DFF73; font-size:13.5px; margin-bottom:4px; }
+  .cp-item .cpname { font-size:17px; font-weight:700; }
+  .cp-item .cpwhy { color:#A0AAB4; font-size:14px; margin-top:4px; line-height:1.6; }
+</style>
+</head>
+<body>
+
+<!-- 开场 -->
+<div class="screen active" id="s-start">
+  <div class="tag">完整深度报告 · 已解锁</div>
+  <h1>测测你的<br><span class="g">音乐人格</span></h1>
+  <p class="sub">14 道情境题，2 分钟。<br>不问你"喜欢什么"，只看你在真实场景里会按下哪首歌。<br>这一版是完整深度报告：五维逐维解读 + 12 首年度歌单 + 人格 CP + 稀有度，答完一次看全。</p>
+  <div class="basis">
+    <h3>这次是认真的</h3>
+    <p>基于音乐偏好心理学 MUSIC 五维模型（Rentfrow &amp; Gosling）改编：温润、质朴、精致、烈度、律动五个维度交叉计分，再从音乐角度解读你的耳朵——调式、BPM、和弦复杂度、音色偏好。娱乐向，但有依据。</p>
+  </div>
+  <div class="unlock">
+    <h3>你将解锁</h3>
+    <ul>
+      <li>五维逐维深度解读（不只是画像条）</li>
+      <li>12 首年度歌单（免费版只有 3 首）</li>
+      <li>人格 CP：最佳拍档 + 最互补</li>
+      <li>人格稀有度</li>
+      <li>专属成长建议</li>
+    </ul>
+  </div>
+  <button class="btn" onclick="startQuiz()">开始测试</button>
+</div>
+
+<!-- 答题 -->
+<div class="screen" id="s-quiz">
+  <div class="progress"><i id="pbar" style="width:0%"></i></div>
+  <div class="qnum" id="qnum"></div>
+  <div class="q" id="qtext"></div>
+  <div id="opts"></div>
+</div>
+
+<!-- 结果 -->
+<div class="screen" id="s-result">
+  <div class="rname">你的音乐人格是</div>
+  <div class="rtitle" id="r-title"></div>
+  <p class="rtag" id="r-tag"></p>
+  <div><span class="rare" id="r-rare"></span></div>
+  <div class="dims">
+    <h3>第一章 · 你的五维画像</h3>
+    <div id="dimlist"></div>
+  </div>
+  <div class="sec">
+    <h3>第二章 · 逐维深度解读</h3>
+    <div id="r-dimtext"></div>
+  </div>
+  <div class="sec">
+    <h3>第三章 · 心理学解读</h3>
+    <p id="r-psy"></p>
+  </div>
+  <div class="sec">
+    <h3>第四章 · 你的耳朵在挑什么</h3>
+    <p id="r-mus"></p>
+  </div>
+  <div class="sec">
+    <h3>第五章 · 为什么说准 · 你的原话</h3>
+    <div id="r-cb"></div>
+  </div>
+  <div class="bgm">
+    <h3>第六章 · 你的年度歌单 · 12 首</h3>
+    <div id="r-playlist"></div>
+  </div>
+  <div class="sec">
+    <h3>第七章 · 人格 CP</h3>
+    <div id="r-cp"></div>
+  </div>
+  <div class="sec">
+    <h3>第八章 · 给你的一句建议</h3>
+    <p id="r-tip"></p>
+  </div>
+  <button class="btn" onclick="makeCard()">生成结果卡片</button>
+  <div id="cardWrap"><img id="cardImg" alt="结果卡片"><p>长按图片保存，分享给朋友一起测</p></div>
+  <button class="btn ghost" onclick="location.reload()">再测一次</button>
+</div>
+
+<canvas id="cv" width="1080" height="1440" style="display:none"></canvas>
+
+<script>
+// 五维： [温润Mellow, 质朴Unpretentious, 精致Sophisticated, 烈度Intense, 律动Contemporary]
+const DIMNAMES = ["温润","质朴","精致","烈度","律动"];
+const QUESTIONS = [
+ {q:"深夜一个人戴上耳机，你最想听到的是？", o:[
+   {t:"慢慢的、软软的，像裹了层毛毯", s:[2,0,0,0,0]},
+   {t:"木吉他配人声，简单干净", s:[1,2,0,0,0]},
+   {t:"一段爵士钢琴，越听越有细节", s:[0,0,2,0,0]},
+   {t:"没歌词的氛围音乐，怎么飘怎么来", s:[1,0,1,0,0]},
+   {t:"带劲的，先把情绪顶上去再说", s:[0,0,0,1,1]} ]},
+ {q:"跑步或运动的时候，你需要什么？", o:[
+   {t:"BPM 拉满，鼓点踩着步频走", s:[0,0,0,2,1]},
+   {t:"有律动的流行歌，跟着晃着跑", s:[0,0,0,0,2]},
+   {t:"不听歌，听自己的呼吸和脚步", s:[1,1,0,0,0]},
+   {t:"一首熟悉的老歌，不知不觉就跑完了", s:[0,1,0,0,1]},
+   {t:"纯音乐，让脑子彻底放空", s:[1,0,1,0,0]} ]},
+ {q:"一首歌最先抓住你耳朵的是？", o:[
+   {t:"旋律，好听就是好听", s:[1,0,0,0,1]},
+   {t:"节奏和律动，想跟着动", s:[0,0,0,0,2]},
+   {t:"歌词，写到心里去了", s:[0,2,0,0,0]},
+   {t:"和声和编配，层次太高级", s:[0,0,2,0,0]},
+   {t:"音色和氛围，一开口就沦陷", s:[2,0,0,0,0]} ]},
+ {q:"KTV 里你的保留曲目是？", o:[
+   {t:"燃的，全场一起嗨", s:[0,0,0,1,1]},
+   {t:"情歌，唱到自己都感动", s:[2,0,0,0,0]},
+   {t:"老歌，百唱不厌", s:[0,2,0,0,0]},
+   {t:"高难度炫技曲，飙的就是高音", s:[0,0,1,1,0]},
+   {t:"最新热歌，紧跟潮流", s:[0,0,0,0,2]} ]},
+ {q:"听到一首编曲很复杂的歌（中途变调、变拍子），你？", o:[
+   {t:"爽，就喜欢这种“有东西”的", s:[0,0,2,0,0]},
+   {t:"有点晕，简单点不好吗", s:[0,2,0,0,0]},
+   {t:"无所谓，旋律好听就行", s:[1,0,0,0,1]},
+   {t:"如果是燃的那种复杂，我爱死", s:[0,0,1,1,0]} ]},
+ {q:"你最受不了哪种歌？", o:[
+   {t:"太吵的，耳朵疼", s:[2,0,0,0,0]},
+   {t:"太“土”的，没质感", s:[0,0,1,0,1]},
+   {t:"太平淡的，听着想睡", s:[0,0,0,2,0]},
+   {t:"太装的，听着累", s:[0,2,0,0,0]},
+   {t:"太老气的，跟不上时代", s:[0,0,0,0,2]} ]},
+ {q:"emo、心情低落的时候，你的听歌策略是？", o:[
+   {t:"听更丧的，哭出来就好了", s:[2,0,0,0,0]},
+   {t:"听燃的，硬把自己拉出来", s:[0,0,0,2,0]},
+   {t:"听老歌，回到熟悉的感觉里", s:[0,2,0,0,0]},
+   {t:"听没歌词的纯音乐，让脑子静下来", s:[1,0,1,0,0]},
+   {t:"听舞曲，动起来就不想了", s:[0,0,0,0,2]} ]},
+ {q:"你对新歌的态度是？", o:[
+   {t:"每周必刷新歌榜，怕错过", s:[0,0,0,0,2]},
+   {t:"歌单万年不变，新歌很难入耳", s:[0,2,0,0,0]},
+   {t:"专挖冷门宝藏，越小众越兴奋", s:[0,0,2,0,0]},
+   {t:"朋友推什么听什么", s:[1,0,0,0,1]},
+   {t:"爱听现场版和翻唱，找不一样的感觉", s:[0,1,1,0,0]} ]},
+ {q:"如果去听一场现场，你选？", o:[
+   {t:"大型音乐节，蹦到脱水", s:[0,0,0,1,1]},
+   {t:"小型 livehouse，离歌手三米远", s:[1,1,0,0,0]},
+   {t:"音乐厅交响乐，正襟危坐", s:[0,0,2,0,0]},
+   {t:"爵士酒吧，边喝边听", s:[1,0,1,0,0]},
+   {t:"演唱会，万人大合唱那种", s:[1,0,0,0,1]} ]},
+ {q:"哪种声音最戳你？", o:[
+   {t:"失真吉他一出来，头皮发麻", s:[0,0,0,2,0]},
+   {t:"钢琴和弦乐，干净高级", s:[0,0,2,0,0]},
+   {t:"合成器音色，未来感拉满", s:[0,0,0,1,1]},
+   {t:"木吉他扫弦，扑面而来的生活气", s:[0,2,0,0,0]},
+   {t:"人声，尤其是和声一出来", s:[2,0,0,0,0]} ]},
+ {q:"你听歌会认真看歌词吗？", o:[
+   {t:"会，歌词是灵魂，还会抄下来", s:[0,2,0,0,0]},
+   {t:"大概知道意思就行", s:[1,0,0,0,1]},
+   {t:"基本不看，我听的是声音本身", s:[1,0,1,0,0]},
+   {t:"外语歌无所谓词，感觉对了就行", s:[1,0,0,1,0]},
+   {t:"会看，还会研究它用了什么典故", s:[0,1,1,0,0]} ]},
+ {q:"早上通勤或上学路上，你放什么？", o:[
+   {t:"提神的，先把电充满", s:[0,0,0,1,1]},
+   {t:"舒缓的，不想那么快进入战斗状态", s:[2,0,0,0,0]},
+   {t:"播客或有声书也算“听”", s:[0,1,1,0,0]},
+   {t:"最近单曲循环的那一首", s:[1,0,0,0,1]},
+   {t:"老歌电台，随缘", s:[0,2,0,0,0]} ]},
+ {q:"你心中的“神作”标准是？", o:[
+   {t:"编曲封神，每次听都有新细节", s:[0,0,2,0,0]},
+   {t:"歌词封神，一句顶一万句", s:[0,2,0,0,0]},
+   {t:"旋律封神，过耳不忘", s:[1,0,0,0,1]},
+   {t:"氛围封神，一听就被拉进另一个世界", s:[2,0,0,0,0]},
+   {t:"现场封神，看一次记一辈子", s:[0,0,0,2,0]} ]},
+ {q:"如果你的人生是一部电影，配乐会是？", o:[
+   {t:"管弦乐大编制，史诗感拉满", s:[0,0,1,1,0]},
+   {t:"民谣吉他，慢慢讲故事", s:[0,2,0,0,0]},
+   {t:"电子节拍，又燃又酷", s:[0,0,0,1,1]},
+   {t:"钢琴独奏，安静克制", s:[1,0,1,0,0]},
+   {t:"复古金曲串烧，自带年代滤镜", s:[0,1,0,0,1]} ]}
+];
+const PERSONAS = [
+ {name:"电音纵火犯", v:[0,0,1,3,3], tag:"你的多巴胺，是按鼓点分泌的",
+  psy:"心理学上你属于典型的高唤醒偏好——大脑需要强刺激才觉得“活着”。研究显示，偏爱高强度音乐的人，“感觉寻求”得分普遍更高。你用音乐的方式很直接：不是装饰情绪，是点火。开心要放大，烦躁就用更响的鼓点压过去。",
+  mus:"你的耳朵锁定 128 BPM 上下的四四拍底鼓、侧链压缩的“呼吸感”和 drop 之前的 build-up。和弦你反而不挑，越简单越好——简单的和声是给节奏和音色让路。比起旋律，你对合成器音色的敏感度高得多。",
+  songs:[["Martin Garrix《Animals》","极简到只剩律动，正是你的菜"],["Avicii《Levels》","采样人声加大房间式推进，开心版的你"],["Skrillex《Bangarang》","音色暴力美学，烦躁时的专用出口"]]},
+ {name:"摇滚独行侠", v:[0,2,0,3,0], tag:"失真吉他响起，你就不是一个人了",
+  psy:"你把音乐当“战友”。心理学里这叫宣泄型情绪调节：不开心的事不说出口，让失真吉他替你喊。同时偏爱“烈度”和“真实感”的人，通常独立性强、对装模作样零容忍——你选歌的标准和做人的标准，是同一套。",
+  mus:"你挑的是失真吉他和真鼓的“毛边感”，BPM 多在 120–160，爱小调的冲劲和“主歌压着、副歌炸开”的结构。和弦不用复杂，但必须真弹真打，电子味重了你立刻出戏。",
+  songs:[["Beyond《海阔天空》","华语摇滚里“真实感”的天花板"],["Guns N' Roses《Sweet Child O' Mine》","前奏一响，独行侠也要回头"],["五月天《倔强》","你的倔，他们替你写成了歌"]]},
+ {name:"深夜爵士猫", v:[2,0,3,0,1], tag:"你听的不是歌，是细节",
+  psy:"你的开放性大概率很高——心理学研究里，“精致”维度的偏好和开放性、以及对不确定感的容忍度强相关。你享受“有点听不懂但很高级”的暧昧，大脑在复杂信息里得到的不是负担，是快感。听歌对你来说是独处仪式，不太需要被理解。",
+  mus:"你的耳朵在抓延伸和弦（九和弦、十一和弦）、切分音和即兴里的“错位感”。BPM 对你不重要，重要的是和声走向永远比你预期多拐一个弯。调式上，你偏爱小调和多利亚调式那种说不清道不明的暧昧。",
+  songs:[["Chet Baker《My Funny Valentine》","一开口，时间就慢了下来"],["Norah Jones《Come Away With Me》","把爵士的松弛唱进了流行歌里"],["Frank Sinatra《Fly Me to the Moon》","摇摆感的标准答案"]]},
+ {name:"古典守夜人", v:[1,0,3,1,0], tag:"你的歌单里，藏着三个世纪",
+  psy:"你是少数能从“结构”里获得快感的人。心理学上这对应高开放性加上高尽责性：你享受秩序、铺陈和“伏笔回收”的满足感。三分钟的歌对你来说太短了，你需要一个完整的世界，慢慢走进去。",
+  mus:"你听对位、听配器、听乐章之间的呼应。你在意的不是 BPM，而是速度背后的呼吸。对小调的悲剧性和大调的辉煌你都照单全收——你要的是完整叙事，不是单一情绪。",
+  songs:[["肖邦《夜曲 Op.9 No.2》","一个人深夜里的标准配置"],["德彪西《月光》","印象派的光影，你的耳朵能看见"],["久石让《Summer》","古典的底子，流行的心"]]},
+ {name:"造梦氛围师", v:[3,0,2,0,0], tag:"你需要的，是一个能躲进去的声音",
+  psy:"你用音乐“造房间”。心理学把这叫抽离式情绪修复：压力大的时候，你不是要被激励，而是要一个能暂时躲进去的声景。高敏感人群里这种偏好尤其常见——你的感受雷达比一般人密，所以需要低刺激、高质感的输入来回血。",
+  mus:"你挑氛围胜过旋律：混响要长，音色要模糊，留白要多。BPM 通常在 80 以下，甚至没有明确节拍。和弦爱用挂留和弦制造“悬而未决”，偏爱小调，但必须是温柔的小调。",
+  songs:[["Sigur Rós《Hoppípolla》","听不懂歌词反而正好，纯粹的画面感"],["Bon Iver《Holocene》","木吉他和人声都泡在雾里"],["Radiohead《Everything In Its Right Place》","不安又迷人的另一种氛围"]]},
+ {name:"R&B 微醺夜", v:[3,1,0,0,2], tag:"你的情绪，要有质感地流动",
+  psy:"你对情绪的颗粒度要求很高——开心还不够，要带点故事的那种。心理学上偏爱“温润+律动”的人，情绪调节偏沉浸式：不逃避感受，让它在节奏里慢慢流完。你浪漫但不滥情，分寸感是你的人格底色。",
+  mus:"你的耳朵爱切分和 groove 里的“懒”——鼓点像慢半拍，人声要有转音和气声。BPM 多在 85–100，和弦爱用七和弦、九和弦的暧昧色彩，像大调里藏着一点小调的忧伤。",
+  songs:[["方大同《Love Song》","华语 R&B 的天花板，温柔又有律动"],["Khalid《Better》","微醺本醺，松弛到骨子里"],["The Weeknd《Earned It》","暗色系的性感，你的夜晚 BGM"]]},
+ {name:"民谣流浪者", v:[2,3,0,0,0], tag:"歌里得有生活，你才肯听",
+  psy:"你听歌其实是在“认人”。心理学里“质朴”维度的偏好和真诚性、怀旧倾向相关：你对过度包装天然警惕，一首歌打动你的方式，是让你相信“唱的人真的经历过”。你的情绪调节靠共鸣——有人替你把话说出来，就够了。",
+  mus:"你的耳朵认木吉他的扫弦声和略带瑕疵的真声。和弦就是几个开放和弦来回走，BPM 60–90，像走路的速度。你不挑编曲挑歌词：一句歌词写到位，你能原谅整首歌的简单。",
+  songs:[["赵雷《成都》","一把吉他一座城，就是你的模板"],["宋冬野《董小姐》","故事感拉满，听一遍像过了一生"],["Bob Dylan《Blowin' in the Wind》","民谣的源头，问题比答案更动人"]]},
+ {name:"复古迪斯科灵魂", v:[1,2,0,0,3], tag:"好听的歌不分年代，只分跟不跟拍",
+  psy:"你的怀旧不是伤感，是审美。心理学称之为“年代错位偏好”：你坚信好旋律不分年代，甚至觉得老歌的制作标准更高——很多时候确实如此。社交场合你是气氛组组长，放一首老歌全场跟唱，是你最得意的时刻。",
+  mus:"你的耳朵被上世纪的黄金配方养刁了：强拍贝斯线、闪亮的弦乐、副歌必须能大合唱。BPM 100–120 正好是“心跳想跳舞”的速度，和弦爱用那个年代气派的大调走向。",
+  songs:[["ABBA《Dancing Queen》","迪斯科皇冠上的明珠"],["邓丽君《月亮代表我的心》","温柔的国民记忆"],["新裤子《你要跳舞吗》","复古的壳，年轻的魂，正是你的混搭"]]},
+ {name:"流行弄潮儿", v:[1,0,0,1,3], tag:"新歌雷达本达，热单必有你一份",
+  psy:"你的雷达永远开着。心理学上这对应高社交性加上新奇寻求：新歌对你不只是信息，更是社交货币和情绪快充。你不怕“烂大街”，你怕的是没听过、被排除在话题之外。你的快乐来得很直接，旋律一上头，烦恼先放一边。",
+  mus:"你的耳朵被顶级流行工业训练得很准：三秒内必须有钩子，副歌不用宽音域但必须洗脑。BPM 95–125 是你的舒适区，和弦是经典的热门走向——你不在乎俗，你在乎中不中。",
+  songs:[["周杰伦《晴天》","旋律钩子的教科书"],["Taylor Swift《Shake It Off》","把烦恼抖掉的律动"],["蔡依林《日不落》","华语舞曲的甜度标准"]]},
+ {name:"老歌收藏家", v:[1,3,2,0,0], tag:"你收藏的不是歌，是回不去的时间",
+  psy:"你收藏的不是歌，是时间。心理学里，音乐唤起的怀旧是很强的情绪资源：老歌是你的“心理锚点”，迷茫的时候听一首，就能回到那个确定的自己。你对新事物的谨慎不是守旧，而是你知道，好东西经得起反复听。",
+  mus:"你的耳朵有考古癖：爱原版胜过翻唱，甚至爱磁带底噪里的瑕疵。和弦与编配你要“那个年代的做法”，BPM 不挑，挑的是演唱者的咬字和气口——那些东西，在新歌里越来越少了。",
+  songs:[["李宗盛《山丘》","唱的是中年，听懂的是人生进度条"],["罗大佑《光阴的故事》","歌名就是你的收藏主题"],["Johnny Cash《Hurt》","一首翻唱唱成了绝唱，老灵魂的终极共鸣"]]}
+];
+
+
+// 逐维解读：与 DIMNAMES 同序，每维 [拉满, 在线, 潜伏] 三档（按 pct>=66 / >=33 / 其余）
+const DIMTEXT = [
+ ["温润拉满的人，情绪习惯往柔软处落。心理学上关联高共情与低唤醒偏好；音乐上你偏爱慢板、气声人声和绵密音色，声音越软，心越容易被安顿下来。",
+  "温润在线，说明柔软是你的底色，但并非只听慢歌。忙起来你会用快节奏回血，可真正让你卸下防备的，还是那些慢下来、贴着耳朵唱的歌。",
+  "温润潜伏，你很少让音乐替你疗伤。比起被安慰，你更想被点燃；慢歌对你容易显得拖沓，除非旋律和词真的过硬，否则很难在你歌单里久留。"],
+ ["质朴拉满，你对包装天然免疫。心理学上关联真诚性与怀旧倾向；音乐上你认木吉他、真嗓子和略带瑕疵的现场感，几个开放和弦也能唱得你心头一热。",
+  "质朴在线，你欣赏真诚，但不拒绝精致。制作可以讲究，前提是情感先过关；只要让你相信唱的人真经历过，编曲简单一点你也愿意反复听。",
+  "质朴潜伏，你对粗糙的容忍度很低。太直白、太'土'的表达会让你出戏；你需要制作、概念或声音质感撑起一首歌，纯靠真诚很难打动你。"],
+ ["精致拉满，你的耳朵是显微镜级别。心理学上关联高开放性；音乐上你专抓延伸和弦、和声转位与配器细节，编曲每多一层巧思，你的快感就多一分。",
+  "精致在线，你听得出门道，也吃这一套。变调、切分、和声拐弯都会让你眼睛一亮，但你不偏执——好听仍是第一标准，复杂只是加分项。",
+  "精致潜伏，你对'高级感'的耐心有限。绕来绕去的和声容易让你走神，你更信第一耳的好听：旋律抓不抓人、情绪到不到位，比结构野心重要得多。"],
+ ["烈度拉满，你需要强刺激才觉得过瘾。心理学上关联感觉寻求与高唤醒偏好；音乐上你爱失真、爱高 BPM、爱副歌炸开的瞬间，音量和情绪一起顶格。",
+  "烈度在线，你身上有个随时能被点燃的开关。平时可以安静，但运动、开车或想发泄时，你一定会切到高能量歌单，让肾上腺素接管几分钟。",
+  "烈度潜伏，太吵太冲的歌对你是负担。你的情绪调节偏向内收，宁愿用氛围和旋律慢慢消化，也不想被强节奏推着走，吵闹只会让你更快疲惫。"],
+ ["律动拉满，你的身体比脑子先投票。心理学上关联高社交性与新奇寻求；音乐上你锁定 groove 与新歌热单，鼓点一起，脚尖就开始打拍子。",
+  "律动在线，你对节奏有天然好感。新歌乐意尝鲜，副歌有钩子就先存下来；但你不盲目追热点，老歌和慢歌在你的歌单里同样有一席之地。",
+  "律动潜伏，跟着潮流跑不是你的风格。舞曲和热单很难在你这里久留，你更在意旋律、歌词或质感这些经得起反复听的东西，热度与你无关。"]
+];
+
+// 深度版数据：按人格名挂载（稀有度 / 一句建议 / 人格CP / 12首年度歌单）
+const PRO = {
+ "电音纵火犯": { rare:"约 12% 的人是这种人格",
+  tip:"偶尔把一首歌完整听完而不切歌，你会发现 drop 之外的铺垫也藏着快感。",
+  cpBest:{name:"流行弄潮儿", why:"你点火、他带气氛，热单和 drop 天然是同一桌人。"},
+  cpMatch:{name:"复古迪斯科灵魂", why:"一个追新节拍，一个守黄金律动，互相补上对方缺的那个年代。"},
+  playlist:[
+   {t:"Martin Garrix《Animals》", n:"极简到只剩律动，正是你的菜"},
+   {t:"Avicii《Levels》", n:"采样人声加大房间式推进，开心版的你"},
+   {t:"Skrillex《Bangarang》", n:"音色暴力美学，烦躁时的专用出口"},
+   {t:"Alan Walker《Faded》", n:"空灵人声撞上 drop，你耳机里的常客"},
+   {t:"Zedd《Clarity》", n:"旋律型电音的标杆，女声一进直接起飞"},
+   {t:"Calvin Harris《Summer》", n:"一听就想出门的夏日底鼓味"},
+   {t:"Deadmau5《Strobe》", n:"十分钟的渐进，后劲比 drop 还大"},
+   {t:"Swedish House Mafia《Don't You Worry Child》", n:"万人合唱级的电音现场感"},
+   {t:"The Chainsmokers《Closer》", n:"流行化的电音，副歌洗脑预警"},
+   {t:"Tiësto《The Business》", n:"低音线骚气，律动直接拉满"},
+   {t:"Marshmello《Silence》", n:"难得安静的棉花糖，emo 时专用"},
+   {t:"Illenium《Good Things Fall Apart》", n:"碎过又燃回来，旋律系 bass 的代表"} ]},
+ "摇滚独行侠": { rare:"约 11% 的人是这种人格",
+  tip:"试着接受一点电子音色，不是背叛摇滚，是给耳朵多留一条路。",
+  cpBest:{name:"老歌收藏家", why:"都认一个'真'字：真乐器、真唱功，聊起老唱片能聊一整夜。"},
+  cpMatch:{name:"造梦氛围师", why:"一个向外喊，一个向内躲，刚好把彼此的情绪拉回中间。"},
+  playlist:[
+   {t:"Beyond《海阔天空》", n:"华语摇滚里'真实感'的天花板"},
+   {t:"Guns N' Roses《Sweet Child O' Mine》", n:"前奏一响，独行侠也要回头"},
+   {t:"五月天《倔强》", n:"你的倔，他们替你写成了歌"},
+   {t:"Linkin Park《In the End》", n:"千禧摇滚的图腾，钢琴 intro 一响就入戏"},
+   {t:"Bon Jovi《It's My Life》", n:"副歌就是一句人生宣言"},
+   {t:"Green Day《Boulevard of Broken Dreams》", n:"独行侠的主题曲本曲"},
+   {t:"Nirvana《Smells Like Teen Spirit》", n:"失真一响，青春开始叛逆"},
+   {t:"汪峰《北京北京》", n:"漂泊者的自白，沧桑又硬气"},
+   {t:"Queen《Don't Stop Me Now》", n:"快乐也能摇滚到飞起"},
+   {t:"赵传《我是一只小小鸟》", n:"普通人的呐喊，唱给自己听"},
+   {t:"伍佰《挪威的森林》", n:"台式摇滚的粗粝与深情"},
+   {t:"AC/DC《Highway to Hell》", n:"简单直接的 riff，爽就完了"} ]},
+ "深夜爵士猫": { rare:"约 7% 的人是这种人格",
+  tip:"把你的冷门歌单分享出来吧，总有人和你一样，在细节里过夜。",
+  cpBest:{name:"古典守夜人", why:"同样痴迷结构和细节，一个听和弦拐弯，一个听乐章呼应。"},
+  cpMatch:{name:"民谣流浪者", why:"你嫌他太素，他嫌你太绕——但你们都讨厌没诚意的音乐。"},
+  playlist:[
+   {t:"Chet Baker《My Funny Valentine》", n:"一开口，时间就慢了下来"},
+   {t:"Norah Jones《Come Away With Me》", n:"把爵士的松弛唱进了流行歌里"},
+   {t:"Frank Sinatra《Fly Me to the Moon》", n:"摇摆感的标准答案"},
+   {t:"Miles Davis《So What》", n:"酷派爵士的门面，极简又高级"},
+   {t:"Billie Holiday《Blue Moon》", n:"沙哑嗓音里全是故事"},
+   {t:"Dave Brubeck《Take Five》", n:"五拍子的摇摆，专门打破节拍感"},
+   {t:"小野丽莎《La Vie En Rose》", n:"波萨诺瓦的慵懒，换个语言也成立"},
+   {t:"Diana Krall《The Look of Love》", n:"耳边低语式的演绎"},
+   {t:"Ella Fitzgerald《Dream a Little Dream of Me》", n:"甜到骨子里的老爵士"},
+   {t:"Keith Jarrett《The Köln Concert》", n:"即兴钢琴，一个人就是一支乐队"},
+   {t:"王若琳《Love Me Tender》", n:"复古嗓配爵士编配，华语里的稀有品"},
+   {t:"Michael Bublé《Feeling Good》", n:"大乐队一开场，气场全开"} ]},
+ "古典守夜人": { rare:"约 6% 的人是这种人格",
+  tip:"给流行歌一次机会：三分钟里藏一整个世界，是另一种本事。",
+  cpBest:{name:"深夜爵士猫", why:"两种细节控：一个守秩序，一个玩即兴，正好彼此补课。"},
+  cpMatch:{name:"电音纵火犯", why:"你爱完整的世界，他爱三分钟的爆点，互相打开新大陆。"},
+  playlist:[
+   {t:"肖邦《夜曲 Op.9 No.2》", n:"一个人深夜里的标准配置"},
+   {t:"德彪西《月光》", n:"印象派的光影，你的耳朵能看见"},
+   {t:"久石让《Summer》", n:"古典的底子，流行的心"},
+   {t:"巴赫《哥德堡变奏曲》", n:"秩序之美，失眠时的良药"},
+   {t:"贝多芬《月光奏鸣曲》", n:"第一乐章的克制，比爆发更难"},
+   {t:"拉赫玛尼诺夫《第二钢琴协奏曲》", n:"从低谷里一步步走回光里"},
+   {t:"柴可夫斯基《如歌的行板》", n:"弦乐一出来，眼眶会热"},
+   {t:"马友友《巴赫无伴奏大提琴组曲》", n:"一把琴，撑起整个宇宙"},
+   {t:"萨蒂《Gymnopédie No.1》", n:"极简到只剩呼吸"},
+   {t:"维瓦尔第《四季 · 冬》", n:"寒意里的紧张感，三百年前就很摇滚"},
+   {t:"帕赫贝尔《卡农》", n:"听过无数次，结构依然完美"},
+   {t:"久石让《天空之城》", n:"用古典配器写出的童话"} ]},
+ "造梦氛围师": { rare:"约 9% 的人是这种人格",
+  tip:"氛围之外，偶尔听听有明确节拍的歌，把身体也一起叫醒。",
+  cpBest:{name:"R&B 微醺夜", why:"都要氛围和质感，一个造房间，一个在房间里慢慢流情绪。"},
+  cpMatch:{name:"摇滚独行侠", why:"你的安静治他的燥，他的直接治你的闷，化学反应拉满。"},
+  playlist:[
+   {t:"Sigur Rós《Hoppípolla》", n:"听不懂歌词反而正好，纯粹的画面感"},
+   {t:"Bon Iver《Holocene》", n:"木吉他和人声都泡在雾里"},
+   {t:"Radiohead《Everything In Its Right Place》", n:"不安又迷人的另一种氛围"},
+   {t:"Brian Eno《An Ending (Ascent)》", n:"氛围音乐的源头之一，漂浮感本源"},
+   {t:"坂本龙一《Merry Christmas Mr. Lawrence》", n:"钢琴与弦乐的留白美学"},
+   {t:"Explosions in the Sky《Your Hand in Mine》", n:"后摇的温柔面，没有歌词全是画面"},
+   {t:"王菲《乘客》", n:"梦幻唱腔，国语氛围的范本"},
+   {t:"Ólafur Arnalds《Near Light》", n:"电子与古典之间点着一盏灯"},
+   {t:"Hammock《Breathturn》", n:"像在云层里慢慢下坠"},
+   {t:"窦唯《黑梦》", n:"国内氛围摇滚的老祖宗"},
+   {t:"M83《Wait》", n:"人声像从很远的地方传来"},
+   {t:"Beach House《Space Song》", n:"梦幻流行的代表作，循环一夜也不腻"} ]},
+ "R&B 微醺夜": { rare:"约 13% 的人是这种人格",
+  tip:"你的分寸感很珍贵，但偶尔失控一次，让情绪流满整首歌。",
+  cpBest:{name:"造梦氛围师", why:"同为气氛组：你负责律动，他负责留白，夜晚被你们包了。"},
+  cpMatch:{name:"流行弄潮儿", why:"你讲究颗粒度，他讲究传播度，歌单一拼，深度热度全有。"},
+  playlist:[
+   {t:"方大同《Love Song》", n:"华语 R&B 的天花板，温柔又有律动"},
+   {t:"Khalid《Better》", n:"微醺本醺，松弛到骨子里"},
+   {t:"The Weeknd《Earned It》", n:"暗色系的性感，你的夜晚 BGM"},
+   {t:"陶喆《普通朋友》", n:"华语 R&B 的启蒙之作"},
+   {t:"SZA《Snooze》", n:"松弛又有黏性的嗓音"},
+   {t:"Daniel Caesar《Best Part》", n:"两个人对唱的微醺感"},
+   {t:"王力宏《唯一》", n:"钢琴 R&B 的温柔暴击"},
+   {t:"Frank Ocean《Thinkin Bout You》", n:"假声一出，氛围直接拉满"},
+   {t:"袁娅维《说散就散》", n:"气声与转音的华语教科书"},
+   {t:"Bruno Mars《Versace on the Floor》", n:"复古 R&B 的丝滑质感"},
+   {t:"李玖哲《夏天》", n:"慵懒到骨子里的夏日 R&B"},
+   {t:"林俊杰《修炼爱情》", n:"细腻到每一口气都有情绪"} ]},
+ "民谣流浪者": { rare:"约 12% 的人是这种人格",
+  tip:"下一站不妨听听编曲复杂的作品，生活气和高级感可以兼得。",
+  cpBest:{name:"老歌收藏家", why:"都信'歌里得有生活'，一个收藏时间，一个收藏故事。"},
+  cpMatch:{name:"深夜爵士猫", why:"你的素颜需要他的精致点缀，他的复杂需要你的真诚落地。"},
+  playlist:[
+   {t:"赵雷《成都》", n:"一把吉他一座城，就是你的模板"},
+   {t:"宋冬野《董小姐》", n:"故事感拉满，听一遍像过了一生"},
+   {t:"Bob Dylan《Blowin' in the Wind》", n:"民谣的源头，问题比答案更动人"},
+   {t:"陈鸿宇《理想三旬》", n:"把漂泊唱得克制又体面"},
+   {t:"毛不易《消愁》", n:"一杯敬明天的共鸣感"},
+   {t:"李志《天空之城》", n:"粗粝的真诚，不修音的现场感"},
+   {t:"朴树《平凡之路》", n:"走过大半生才懂的平淡"},
+   {t:"Leonard Cohen《Hallelujah》", n:"沙哑嗓里唱透了信仰与破碎"},
+   {t:"万晓利《陀螺》", n:"一把吉他讲完一个寓言"},
+   {t:"尧十三《瞎子》", n:"北方民谣的锋利与深情"},
+   {t:"Simon & Garfunkel《The Sound of Silence》", n:"两把嗓子，民谣的丰碑"},
+   {t:"程璧《我想和你虚度时光》", n:"把'慢'唱成一种生活态度"} ]},
+ "复古迪斯科灵魂": { rare:"约 5% 的人是这种人格",
+  tip:"新歌里也有未来的金曲，给今年的热单一个成为'老歌'的机会。",
+  cpBest:{name:"流行弄潮儿", why:"都是气氛担当：一个负责经典金曲，一个负责当下热单。"},
+  cpMatch:{name:"古典守夜人", why:"一个在舞池里找黄金年代，一个在音乐厅里，审美却意外同频。"},
+  playlist:[
+   {t:"ABBA《Dancing Queen》", n:"迪斯科皇冠上的明珠"},
+   {t:"邓丽君《月亮代表我的心》", n:"温柔的国民记忆"},
+   {t:"新裤子《你要跳舞吗》", n:"复古的壳，年轻的魂，正是你的混搭"},
+   {t:"Bee Gees《Stayin' Alive》", n:"迪斯科步伐的标准节奏"},
+   {t:"张蔷《别再问我什么是迪斯科》", n:"内地迪斯科女王的招牌"},
+   {t:"Michael Jackson《Billie Jean》", n:"贝斯线一起，全场自动让路"},
+   {t:"费翔《冬天里的一把火》", n:"那个年代的全民热单"},
+   {t:"Earth, Wind & Fire《September》", n:"九月必听的快乐咒语"},
+   {t:"李玟《Di Da Di》", n:"甜酷迪斯科，少女心和律动都有"},
+   {t:"Donna Summer《Hot Stuff》", n:"迪斯科女王的高压电"},
+   {t:"草蜢《失恋阵线联盟》", n:"港式舞曲的欢乐记忆"},
+   {t:"蔡依林《舞娘》", n:"华语舞曲的复古回潮"} ]},
+ "流行弄潮儿": { rare:"约 16% 的人是这种人格",
+  tip:"挑一首十年前的歌单曲循环一周，你会发现'过气'里也有宝藏。",
+  cpBest:{name:"电音纵火犯", why:"热单和电音是同一个派对的两面，你带旋律，他带能量。"},
+  cpMatch:{name:"老歌收藏家", why:"你怕错过新歌，他怕错过旧梦，歌单互换一次都开眼界。"},
+  playlist:[
+   {t:"周杰伦《晴天》", n:"旋律钩子的教科书"},
+   {t:"Taylor Swift《Shake It Off》", n:"把烦恼抖掉的律动"},
+   {t:"蔡依林《日不落》", n:"华语舞曲的甜度标准"},
+   {t:"林俊杰《江南》", n:"热单常青树，副歌全民会唱"},
+   {t:"BLACKPINK《How You Like That》", n:"K-pop 工业的钩子密度"},
+   {t:"Dua Lipa《Levitating》", n:"全球热单的律动模板"},
+   {t:"五月天《恋爱ING》", n:"演唱会大合唱的固定曲目"},
+   {t:"Ed Sheeran《Shape of You》", n:"流媒体时代的旋律公式"},
+   {t:"邓紫棋《泡沫》", n:"高音钩子，一开口就记住"},
+   {t:"Rosé、Bruno Mars《APT.》", n:"洗脑循环，短视频时代的神曲"},
+   {t:"周深《大鱼》", n:"海豚音钩子，国风流行的破圈样本"},
+   {t:"Justin Bieber《Peaches》", n:"松弛的流行 groove，耐听型热单"} ]},
+ "老歌收藏家": { rare:"约 9% 的人是这种人格",
+  tip:"收藏之外，每月强迫自己听一张新专辑，锚点越多，心越稳。",
+  cpBest:{name:"民谣流浪者", why:"一个收唱片，一个收故事，聊起'当年'谁也停不下来。"},
+  cpMatch:{name:"流行弄潮儿", why:"你守着回不去的时间，他追着正在发生的热闹，正好凑齐一生。"},
+  playlist:[
+   {t:"李宗盛《山丘》", n:"唱的是中年，听懂的是人生进度条"},
+   {t:"罗大佑《光阴的故事》", n:"歌名就是你的收藏主题"},
+   {t:"Johnny Cash《Hurt》", n:"一首翻唱唱成了绝唱，老灵魂的终极共鸣"},
+   {t:"张学友《吻别》", n:"磁带时代的国民情歌"},
+   {t:"齐秦《大约在冬季》", n:"口琴一响，青春就回来了"},
+   {t:"陈淑桦《梦醒时分》", n:"都会女子的心事，李宗盛的笔"},
+   {t:"The Beatles《Yesterday》", n:"被翻唱次数最多的旋律之一"},
+   {t:"邓丽君《我只在乎你》", n:"有些温柔可以跨越年代"},
+   {t:"崔健《一无所有》", n:"中国摇滚的第一声呐喊"},
+   {t:"Elvis Presley《Can't Help Falling in Love》", n:"猫王的温柔面，婚礼常客"},
+   {t:"梅艳芳《似是故人来》", n:"港乐黄金年代的回眸"},
+   {t:"Frank Sinatra《My Way》", n:"唱给一生的交代"} ]}
+};
+
+// 答题回扣：题号(0起) -> 与选项一一对应的回扣文案
+const CALLBACKS = {
+ 2:["旋律优先型听者。好听对你是硬通货，不玄学。",
+     "身体比脑子先投票——这也是你「律动」维度偏高的源头。",
+     "你是用耳朵读书的人，词写不好，歌就先垮一半。",
+     "普通人听热闹，你听门道，耳朵是制作人级别的挑。",
+     "你对声音质地的敏感，正是你「温润」维度的源头。"],
+ 6:["沉浸式调节：不逃避情绪，让它流完——这是很有勇气的用法。",
+     "修复型调节：你不允许自己沉太久，音乐是你的起搏器。",
+     "你用熟悉感给情绪兜底，老歌就是你的安全区。",
+     "你给情绪留白，纯音乐是你的降噪耳机。",
+     "你用身体带走情绪，动起来就是你的解法。"],
+ 13:["你对自己的人生叙事，野心不小。",
+     "你的人生关键词是“真实”，不爱大场面。",
+     "你的自我定位就是主角出场，自带 BGM。",
+     "克制是你的高级感，你不靠音量说话。",
+     "你活得比同龄人“有年头”，老灵魂认证。"]
+};
+let cur = 0;
+let scores = [0,0,0,0,0];
+let answers = [];
+let result = null;
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function startQuiz(){ show('s-quiz'); renderQ(); }
+function renderQ(){
+  const q = QUESTIONS[cur];
+  document.getElementById('pbar').style.width = (cur/QUESTIONS.length*100)+'%';
+  document.getElementById('qnum').textContent = '第 '+(cur+1)+' / '+QUESTIONS.length+' 题';
+  document.getElementById('qtext').textContent = q.q;
+  const box = document.getElementById('opts');
+  box.innerHTML = '';
+  q.o.forEach((opt,oi)=>{
+    const b = document.createElement('button');
+    b.className = 'opt';
+    b.textContent = opt.t;
+    b.onclick = ()=>{
+      answers[cur] = oi;
+      for(let i=0;i<5;i++) scores[i] += opt.s[i];
+      cur++;
+      if(cur < QUESTIONS.length) renderQ(); else showResult();
+    };
+    box.appendChild(b);
+  });
+}
+function levelWord(r){
+  if(r >= 0.85) return '拉满';
+  if(r >= 0.6) return '偏高';
+  if(r >= 0.35) return '中等';
+  return '潜伏';
+}
+function showResult(){
+  const maxS = Math.max(...scores, 1);
+  const u = scores.map(x=> x/maxS*3);
+  let best = null, bestD = 1e9;
+  PERSONAS.forEach(p=>{
+    let d = 0;
+    for(let i=0;i<5;i++) d += (u[i]-p.v[i])*(u[i]-p.v[i]);
+    if(d < bestD){ bestD = d; best = p; }
+  });
+  result = best;
+  document.getElementById('r-title').textContent = best.name;
+  document.getElementById('r-tag').textContent = best.tag;
+  document.getElementById('r-rare').textContent = '稀有度 · ' + PRO[best.name].rare;
+  const dl = document.getElementById('dimlist');
+  dl.innerHTML = '';
+  DIMNAMES.forEach((n,i)=>{
+    const r = scores[i]/maxS;
+    const row = document.createElement('div');
+    row.className = 'dim';
+    row.innerHTML = '<div class="dlabel"><span>'+n+'</span><span>'+levelWord(r)+'</span></div><div class="dbar"><i style="width:'+Math.round(r*100)+'%"></i></div>';
+    dl.appendChild(row);
+  });
+  const dtBox = document.getElementById('r-dimtext');
+  dtBox.innerHTML = '';
+  const TIERS = ['拉满','在线','潜伏'];
+  DIMNAMES.forEach((n,i)=>{
+    const pct = Math.round(scores[i]/maxS*100);
+    const tier = pct >= 66 ? 0 : (pct >= 33 ? 1 : 2);
+    const d = document.createElement('div');
+    d.className = 'dt';
+    d.innerHTML = '<div class="dtname"></div><p></p>';
+    const nm = d.querySelector('.dtname');
+    nm.textContent = n;
+    const sp = document.createElement('span');
+    sp.textContent = TIERS[tier] + ' · ' + pct + '%';
+    nm.appendChild(sp);
+    d.querySelector('p').textContent = DIMTEXT[i][tier];
+    dtBox.appendChild(d);
+  });
+  const cbBox = document.getElementById('r-cb');
+  cbBox.innerHTML = '';
+  [2,6,13].forEach(qi=>{
+    if(answers[qi] === undefined || !CALLBACKS[qi]) return;
+    const p = document.createElement('p');
+    const span = document.createElement('span');
+    span.className = 'cbq';
+    span.textContent = '你选了「'+QUESTIONS[qi].o[answers[qi]].t+'」';
+    p.appendChild(span);
+    p.appendChild(document.createTextNode('——'+CALLBACKS[qi][answers[qi]]));
+    cbBox.appendChild(p);
+  });
+  document.getElementById('r-psy').textContent = best.psy;
+  document.getElementById('r-mus').textContent = best.mus;
+  const pro = PRO[best.name];
+  const pl = document.getElementById('r-playlist');
+  pl.innerHTML = '';
+  pro.playlist.forEach(sg=>{
+    const d = document.createElement('div');
+    d.className = 'song';
+    d.innerHTML = '<div class="sname"></div><div class="swhy"></div>';
+    d.querySelector('.sname').textContent = sg.t;
+    d.querySelector('.swhy').textContent = sg.n;
+    pl.appendChild(d);
+  });
+  const cpBox = document.getElementById('r-cp');
+  cpBox.innerHTML = '';
+  [['最佳拍档', pro.cpBest], ['最互补', pro.cpMatch]].forEach(pair=>{
+    const d = document.createElement('div');
+    d.className = 'cp-item';
+    d.innerHTML = '<div class="cplabel"></div><div class="cpname"></div><div class="cpwhy"></div>';
+    d.querySelector('.cplabel').textContent = pair[0];
+    d.querySelector('.cpname').textContent = pair[1].name;
+    d.querySelector('.cpwhy').textContent = pair[1].why;
+    cpBox.appendChild(d);
+  });
+  document.getElementById('r-tip').textContent = pro.tip;
+  show('s-result');
+}
+function makeCard(){
+  if(!result) return;
+  const cv = document.getElementById('cv');
+  const ctx = cv.getContext('2d');
+  ctx.fillStyle = '#0B0E11'; ctx.fillRect(0,0,1080,1440);
+  ctx.strokeStyle = '#3DFF73'; ctx.lineWidth = 3; ctx.strokeRect(36,36,1008,1368);
+  ctx.fillStyle = '#3DFF73';
+  ctx.font = '32px sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('我 的 音 乐 人 格', 540, 170);
+  ctx.fillStyle = '#F5F5F5';
+  ctx.font = 'bold 110px sans-serif';
+  ctx.fillText(result.name, 540, 330);
+  ctx.fillStyle = '#A0AAB4';
+  ctx.font = '38px sans-serif';
+  wrapText(ctx, result.tag, 540, 440, 880, 56);
+  ctx.fillStyle = '#3DFF73';
+  ctx.font = '32px sans-serif';
+  ctx.fillText('稀有度 · ' + PRO[result.name].rare, 540, 548);
+  // top dims
+  const maxS = Math.max(...scores, 1);
+  const order = scores.map((v,i)=>[v,i]).sort((a,b)=>b[0]-a[0]).slice(0,2);
+  ctx.textAlign = 'left';
+  let y = 620;
+  order.forEach(([v,i])=>{
+    ctx.fillStyle = '#F5F5F5'; ctx.font = 'bold 40px sans-serif';
+    ctx.fillText(DIMNAMES[i], 140, y);
+    ctx.fillStyle = '#1E2630'; ctx.fillRect(320, y-34, 620, 30);
+    ctx.fillStyle = '#3DFF73'; ctx.fillRect(320, y-34, 620*(v/maxS), 30);
+    y += 100;
+  });
+  ctx.fillStyle = '#3DFF73'; ctx.font = 'bold 40px sans-serif'; ctx.textAlign = 'left';
+  ctx.fillText('灵魂 BGM', 140, y+30);
+  ctx.fillStyle = '#F5F5F5'; ctx.font = '36px sans-serif';
+  y += 110;
+  result.songs.forEach(sg=>{ ctx.fillText('· '+sg[0], 140, y); y += 64; });
+  ctx.fillStyle = '#5A6572'; ctx.font = '30px sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('小红书搜「音乐人格」一起测', 540, 1300);
+  const img = document.getElementById('cardImg');
+  img.src = cv.toDataURL('image/png');
+  document.getElementById('cardWrap').style.display = 'block';
+  document.getElementById('cardWrap').scrollIntoView({behavior:'smooth'});
+}
+function wrapText(ctx, text, x, y, maxW, lh){
+  let line = '', yy = y;
+  for(const ch of text){
+    if(ctx.measureText(line+ch).width > maxW){ ctx.fillText(line, x, yy); line = ch; yy += lh; }
+    else line += ch;
+  }
+  if(line) ctx.fillText(line, x, yy);
+}
+</script>
+</body>
+</html>
